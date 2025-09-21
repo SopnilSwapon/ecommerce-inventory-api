@@ -13,14 +13,90 @@ export class ProductRepository {
 
   async create(productData: Partial<Product>): Promise<Product> {
     const product = this.productRepository.create(productData);
-    return this.productsService.update(id, updateProductDto);
+    return this.productRepository.save(product);
   }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete product' })
-  @ApiResponse({ status: 200, description: 'Product successfully deleted' })
-  @ApiResponse({ status: 404, description: 'Product not found' })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.productsService.remove(id);
+  async findAll(
+    query: ProductQueryDto,
+  ): Promise<{ products: Product[]; total: number }> {
+    const queryBuilder = this.createQueryBuilder(query);
+
+    const [products, total] = await queryBuilder
+      .skip((query.page! - 1) * query.limit!)
+      .take(query.limit)
+      .getManyAndCount();
+
+    return { products, total };
+  }
+
+  async findById(id: number): Promise<Product | null> {
+    return this.productRepository.findOne({
+      where: { id },
+      relations: ['category'],
+    });
+  }
+
+  async update(id: number, productData: Partial<Product>): Promise<Product> {
+    await this.productRepository.update(id, productData);
+    const updatedProduct = await this.findById(id);
+    if (!updatedProduct) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+    return updatedProduct;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.productRepository.delete(id);
+  }
+
+  async search(
+    keyword: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ products: Product[]; total: number }> {
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .where('LOWER(product.name) LIKE LOWER(:keyword)', {
+        keyword: `%${keyword}%`,
+      })
+      .orWhere('LOWER(product.description) LIKE LOWER(:keyword)', {
+        keyword: `%${keyword}%`,
+      });
+
+    const [products, total] = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return { products, total };
+  }
+
+  private createQueryBuilder(
+    query: ProductQueryDto,
+  ): SelectQueryBuilder<Product> {
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category');
+
+    if (query.categoryId) {
+      queryBuilder.andWhere('product.categoryId = :categoryId', {
+        categoryId: query.categoryId,
+      });
+    }
+
+    if (query.minPrice) {
+      queryBuilder.andWhere('product.price >= :minPrice', {
+        minPrice: query.minPrice,
+      });
+    }
+
+    if (query.maxPrice) {
+      queryBuilder.andWhere('product.price <= :maxPrice', {
+        maxPrice: query.maxPrice,
+      });
+    }
+
+    return queryBuilder;
   }
 }

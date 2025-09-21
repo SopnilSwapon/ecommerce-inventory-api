@@ -1,19 +1,25 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  Query, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -36,7 +42,8 @@ export class ProductsController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
         throw new BadRequestException('File size cannot exceed 5MB');
       }
       createProductDto.image = file.buffer.toString('base64');
@@ -53,7 +60,10 @@ export class ProductsController {
 
   @Get('search')
   @ApiOperation({ summary: 'Search products by name or description' })
-  @ApiResponse({ status: 200, description: 'Search results retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Search results retrieved successfully',
+  })
   search(
     @Query('q') keyword: string,
     @Query('page', ParseIntPipe) page: number = 1,
@@ -87,4 +97,15 @@ export class ProductsController {
       }
       updateProductDto.image = file.buffer.toString('base64');
     }
-    return this.product
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return this.productsService.update(id, updateProductDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete product' })
+  @ApiResponse({ status: 200, description: 'Product successfully deleted' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.remove(id);
+  }
+}

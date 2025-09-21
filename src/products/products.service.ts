@@ -27,7 +27,7 @@ export class ProductsService {
 
   async findAll(query: ProductQueryDto) {
     const { products, total } = await this.productRepository.findAll(query);
-    const totalPages = Math.ceil(total / query.limit);
+    const totalPages = Math.ceil(total / query.limit!);
 
     return {
       products,

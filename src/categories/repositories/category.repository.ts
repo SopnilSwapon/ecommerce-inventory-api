@@ -28,11 +28,13 @@ export class CategoryRepository {
     });
   }
 
-  async update(id: number, categoryData: Partial<Category>): Promise<Category> {
+  async update(
+    id: number,
+    categoryData: Partial<Category>,
+  ): Promise<Category | null> {
     await this.categoryRepository.update(id, categoryData);
     return this.findById(id);
   }
-
   async delete(id: number): Promise<void> {
     await this.categoryRepository.delete(id);
   }
@@ -41,7 +43,7 @@ export class CategoryRepository {
     return this.categoryRepository.findOne({ where: { name } });
   }
 
-  async hasProducts(id: number): Promise<boolean> {
+  async hasProducts(id: number): Promise<boolean | null> {
     const category = await this.categoryRepository.findOne({
       where: { id },
       relations: ['products'],
