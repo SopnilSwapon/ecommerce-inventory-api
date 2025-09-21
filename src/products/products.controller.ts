@@ -20,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiConsumes,
 } from '@nestjs/swagger';
+import * as multer from 'multer'; // Add this line
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -40,7 +41,7 @@ export class ProductsController {
   // Create product
   async create(
     @Body() createProductDto: CreateProductDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() file?: any,
   ) {
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -92,7 +93,7 @@ export class ProductsController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductDto: UpdateProductDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() file?: any,
   ) {
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
