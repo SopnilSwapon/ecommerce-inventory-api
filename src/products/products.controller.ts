@@ -87,4 +87,4 @@ export class ProductsController {
       }
       updateProductDto.image = file.buffer.toString('base64');
     }
-    return this.produc
+    return this.product
