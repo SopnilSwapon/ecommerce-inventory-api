@@ -4,23 +4,27 @@ import { Repository } from 'typeorm';
 import { Category } from '../entities/category.entity';
 
 @Injectable()
+// Repository wrapper for Category entity
 export class CategoryRepository {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
+  // Create new category
   async create(categoryData: Partial<Category>): Promise<Category> {
     const category = this.categoryRepository.create(categoryData);
     return this.categoryRepository.save(category);
   }
 
+  // Get all categories with products
   async findAll(): Promise<Category[]> {
     return this.categoryRepository.find({
       relations: ['products'],
     });
   }
 
+  // Find category by id
   async findById(id: number): Promise<Category | null> {
     return this.categoryRepository.findOne({
       where: { id },
@@ -28,6 +32,7 @@ export class CategoryRepository {
     });
   }
 
+  // Update category and return updated entity
   async update(
     id: number,
     categoryData: Partial<Category>,
@@ -35,14 +40,17 @@ export class CategoryRepository {
     await this.categoryRepository.update(id, categoryData);
     return this.findById(id);
   }
+  // Delete category by id
   async delete(id: number): Promise<void> {
     await this.categoryRepository.delete(id);
   }
 
+  // Find category by name
   async findByName(name: string): Promise<Category | null> {
     return this.categoryRepository.findOne({ where: { name } });
   }
 
+  // Check if category has related products
   async hasProducts(id: number): Promise<boolean | null> {
     const category = await this.categoryRepository.findOne({
       where: { id },

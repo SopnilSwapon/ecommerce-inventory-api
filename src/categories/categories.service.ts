@@ -9,9 +9,11 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
+// Business logic for categories
 export class CategoriesService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
+  // Create new category (check duplicate name)
   async create(createCategoryDto: CreateCategoryDto) {
     const existingCategory = await this.categoryRepository.findByName(
       createCategoryDto.name,
@@ -19,19 +21,20 @@ export class CategoriesService {
     if (existingCategory) {
       throw new ConflictException('Category name already exists');
     }
-
     return this.categoryRepository.create(createCategoryDto);
   }
 
+  // Get all categories with product count only
   async findAll() {
     const categories = await this.categoryRepository.findAll();
     return categories.map((category) => ({
       ...category,
       productCount: category.products.length,
-      products: undefined, // Remove products from response
+      products: undefined,
     }));
   }
 
+  // Get category by id
   async findOne(id: number) {
     const category = await this.categoryRepository.findById(id);
     if (!category) {
@@ -40,6 +43,7 @@ export class CategoriesService {
     return category;
   }
 
+  // Update category (check duplicate name)
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.categoryRepository.findById(id);
     if (!category) {
@@ -54,10 +58,10 @@ export class CategoriesService {
         throw new ConflictException('Category name already exists');
       }
     }
-
     return this.categoryRepository.update(id, updateCategoryDto);
   }
 
+  // Delete category (only if no products linked)
   async remove(id: number) {
     const category = await this.categoryRepository.findById(id);
     if (!category) {

@@ -10,18 +10,19 @@ import { UserRepository } from '../users/repositories/user.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
-interface JwtPayload {
+interface IJwtPayload {
   sub: number;
   email: string;
 }
 @Injectable()
+// Handles auth logic (register, login, token refresh)
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
-
+  // Register new user
   async register(registerDto: RegisterDto) {
     const existingUser = await this.userRepository.findByEmail(
       registerDto.email,
@@ -46,7 +47,7 @@ export class AuthService {
       ...tokens,
     };
   }
-
+  // User login
   async login(loginDto: LoginDto) {
     const user = await this.userRepository.findByEmail(loginDto.email);
     if (!user) {
@@ -71,10 +72,10 @@ export class AuthService {
       ...tokens,
     };
   }
-
+  // Refresh access token using refresh token
   async refreshToken(refreshToken: string) {
     try {
-      const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
+      const payload = this.jwtService.verify<IJwtPayload>(refreshToken, {
         secret: this.configService.get('REFRESH_JWT_SECRET'),
       });
       const user = await this.userRepository.findById(payload.sub);
@@ -86,7 +87,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
-
+  // Generate access token & refresh tokens
   private generateTokens(userId: number, email: string) {
     const payload = { sub: userId, email };
     return {

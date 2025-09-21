@@ -1,3 +1,4 @@
+import { Product } from 'src/products/entities/product.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,7 +7,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from '../../products/entities/product.entity';
 
 @Entity('categories')
 export class Category {

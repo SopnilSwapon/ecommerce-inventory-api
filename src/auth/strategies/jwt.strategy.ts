@@ -4,12 +4,12 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../../users/repositories/user.repository';
 
-interface JwtPayload {
+interface IJwtPayload {
   sub: number;
   email: string;
-  // add other properties if needed
 }
 @Injectable()
+// JWT strategy for validating tokens
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
@@ -21,16 +21,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // Reject for expired tokens
       ignoreExpiration: false,
-      secretOrKey: jwtSecret, // Now always a string
+      // Secret for validation
+      secretOrKey: jwtSecret,
     });
   }
 
-  async validate(payload: JwtPayload) {
+  // Validate user from JWT payload
+  async validate(payload: IJwtPayload) {
     const user = await this.userRepository.findById(payload.sub);
+    // Invalid token if user not found
     if (!user) {
       throw new UnauthorizedException();
     }
+    // Attach to request.user
     return { userId: user.id, email: user.email };
   }
 }

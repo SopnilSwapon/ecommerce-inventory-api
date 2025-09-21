@@ -12,6 +12,7 @@ export class ProductsService {
     private readonly categoryRepository: CategoryRepository,
   ) {}
 
+  // Creates a new product after validating its category exists.
   async create(createProductDto: CreateProductDto) {
     const category = await this.categoryRepository.findById(
       createProductDto.categoryId,
@@ -25,6 +26,7 @@ export class ProductsService {
     return this.productRepository.create(createProductDto);
   }
 
+  //  Retrieves all products with pagination.
   async findAll(query: ProductQueryDto) {
     const { products, total } = await this.productRepository.findAll(query);
     const totalPages = Math.ceil(total / query.limit!);
@@ -40,6 +42,7 @@ export class ProductsService {
     };
   }
 
+  //  Finds a single product by ID.
   async findOne(id: number) {
     const product = await this.productRepository.findById(id);
     if (!product) {
@@ -47,7 +50,7 @@ export class ProductsService {
     }
     return product;
   }
-
+  //  update a product by ID.
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.findById(id);
     if (!product) {
@@ -68,6 +71,7 @@ export class ProductsService {
     return this.productRepository.update(id, updateProductDto);
   }
 
+  // Deletes a product by ID.
   async remove(id: number) {
     const product = await this.productRepository.findById(id);
     if (!product) {
@@ -77,7 +81,7 @@ export class ProductsService {
     await this.productRepository.delete(id);
     return { message: 'Product deleted successfully' };
   }
-
+  // Searches for products by keyword with pagination support.
   async search(keyword: string, page: number = 1, limit: number = 10) {
     const { products, total } = await this.productRepository.search(
       keyword,

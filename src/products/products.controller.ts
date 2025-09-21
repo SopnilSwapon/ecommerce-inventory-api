@@ -37,6 +37,7 @@ export class ProductsController {
   @ApiConsumes('multipart/form-data')
   @ApiResponse({ status: 201, description: 'Product successfully created' })
   @ApiResponse({ status: 404, description: 'Category not found' })
+  // Create product
   async create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -50,14 +51,14 @@ export class ProductsController {
     }
     return this.productsService.create(createProductDto);
   }
-
+  // Get all products (with filters + pagination)
   @Get()
   @ApiOperation({ summary: 'Get all products with filters and pagination' })
   @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
   findAll(@Query() query: ProductQueryDto) {
     return this.productsService.findAll(query);
   }
-
+  // Search products by keyword
   @Get('search')
   @ApiOperation({ summary: 'Search products by name or description' })
   @ApiResponse({
@@ -72,6 +73,7 @@ export class ProductsController {
     return this.productsService.search(keyword, page, limit);
   }
 
+  // Get product by id
   @Get(':id')
   @ApiOperation({ summary: 'Get product by ID' })
   @ApiResponse({ status: 200, description: 'Product retrieved successfully' })
@@ -80,6 +82,7 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
+  // Update product by id
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update product' })
@@ -97,10 +100,9 @@ export class ProductsController {
       }
       updateProductDto.image = file.buffer.toString('base64');
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.productsService.update(id, updateProductDto);
   }
-
+  // Delete product by id
   @Delete(':id')
   @ApiOperation({ summary: 'Delete product' })
   @ApiResponse({ status: 200, description: 'Product successfully deleted' })
