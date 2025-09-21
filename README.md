@@ -1,98 +1,117 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# E-Commerce Inventory API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A RESTful API for managing products and categories in an e-commerce system, built with **NestJS**, **TypeScript**, and **PostgreSQL**.  
+It features **JWT authentication**, **CRUD operations**, **search & filters**, and optional **product image uploads**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Live Backend: [https://ecommerce-inventory-api-51fs.onrender.com](https://ecommerce-inventory-api-51fs.onrender.com)
 
-## Description
+Swagger Docs: [https://ecommerce-inventory-api-51fs.onrender.com/api/docs](https://ecommerce-inventory-api-51fs.onrender.com/api/docs)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## Features
+
+- **User Authentication**
+
+  - Register (`POST /api/auth/register`)
+  - Login (`POST /api/auth/login`)
+  - JWT-based authorization for all endpoints
+  - Optional refresh token mechanism
+
+- **Product Management**
+
+  - Create, Read, Update, Delete products
+  - Filters: by category, price range, and pagination
+  - Search products by name or description
+  - Optional product image upload (base64 stored)
+
+- **Category Management**
+
+  - Create, Read, Update, Delete categories
+  - Includes product counts in category listing
+  - Prevent deletion if category has linked products
+
+- **Additional Features**
+  - Swagger API documentation
+  - Clean error handling (404, 403, etc.)
+  - SOLID architecture using NestJS modules
+
+---
+
+## Tech Stack
+
+- **Backend**: Node.js, NestJS, TypeScript
+- **Database**: PostgreSQL (hosted on Neon)
+- **ORM**: Prisma
+- **Authentication**: JWT
+- **File Uploads**: Multer (base64 storage)
+- **Documentation**: Swagger (`@nestjs/swagger`)
+- **Hosting**: Render (backend), Neon (database)
+
+---
+
+## API Documentation
+
+Swagger UI is available at:  
+[https://ecommerce-inventory-api-51fs.onrender.com/api/docs](https://ecommerce-inventory-api-51fs.onrender.com/api/docs)
+
+Endpoints include:
+
+- **Auth**: `/api/auth/register`, `/api/auth/login`
+- **Products**: `/api/products`, `/api/products/:id`, `/api/products/search`
+- **Categories**: `/api/categories`, `/api/categories/:id`
+
+---
+
+## Setup Instructions
+
+### Local Development
+
+1. Clone the repository:
 
 ```bash
-$ npm install
+git clone https://github.com/SopnilSwapon/ecommerce-inventory-api.git
+cd ecommerce-inventory-api
 ```
 
-## Compile and run the project
+echo "Cloning repository..."
+git clone https://github.com/SopnilSwapon/ecommerce-inventory-api
+cd ecommerce-inventory-api
 
-```bash
-# development
-$ npm run start
+# 2️⃣ Install dependencies (force)
 
-# watch mode
-$ npm run start:dev
+npm install --force
 
-# production mode
-$ npm run start:prod
-```
+# 3️⃣ Install Prisma locally (if not installed)
 
-## Run tests
+npm install prisma --save-dev
 
-```bash
-# unit tests
-$ npm run test
+# 4️⃣ Generate Prisma client
 
-# e2e tests
-$ npm run test:e2e
+npx prisma generate
 
-# test coverage
-$ npm run test:cov
-```
+# 5️⃣ Create .env file (placeholder)
 
-## Deployment
+cat <<EOL > .env
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# Replace the following values with your own credentials
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=3600s
+PORT=3000
+EOL
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+echo ".env file created. Please update it with your database credentials."
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+# 6️⃣ Run database migrations
 
-## Resources
+npx prisma migrate dev --name init
 
-Check out a few resources that may come in handy when working with NestJS:
+# 7️⃣ Start development server
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+npm run start:dev
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+echo "Setup complete!"
+echo "Local API: http://localhost:3000"
+echo "Swagger Docs: http://localhost:3000/api/docs"
